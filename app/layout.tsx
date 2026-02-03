@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import LeftNav from "./components/LeftNav";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,14 +25,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex min-h-screen">
-          <LeftNav />
-          <main className="min-w-0 flex-1">{children}</main>
-        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('control-centre-theme');var d=document.documentElement;d.classList.add(t==='light'?'light':'dark');})();`,
+          }}
+        />
+        <ThemeProvider>
+          <div className="flex min-h-screen bg-zinc-100 dark:bg-zinc-950">
+            <LeftNav />
+            <main className="min-w-0 flex-1">{children}</main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

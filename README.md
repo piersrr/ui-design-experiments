@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Screenshots
+
+Here are example screenshots of the dashboard UI:
+
+<p float="left">
+  <img src="public/screenshot1.png" alt="Dashboard Screenshot 1" width="420" />
+  <img src="public/screenshot2.png" alt="Dashboard Screenshot 2" width="420" />
+</p>
+
+
+
 ## Getting Started
 
 First, run the development server:

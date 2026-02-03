@@ -3,27 +3,51 @@
 import KPIWidget from './components/KPIWidget';
 import ChartWidget from './components/ChartWidget';
 import RadarWidget from './components/RadarWidget';
+import { useTheme } from './context/ThemeContext';
+
+const chartColors = {
+  light: {
+    tooltipBg: '#ffffff',
+    tooltipBorder: '#e4e4e7',
+    tooltipText: '#3f3f46',
+    axisLine: '#d4d4d8',
+    axisLabel: '#71717a',
+    splitLine: '#e4e4e7',
+    pieBorder: '#f4f4f5',
+  },
+  dark: {
+    tooltipBg: '#18181b',
+    tooltipBorder: '#3f3f46',
+    tooltipText: '#a1a1aa',
+    axisLine: '#3f3f46',
+    axisLabel: '#71717a',
+    splitLine: '#27272a',
+    pieBorder: '#0a0a0a',
+  },
+} as const;
 
 export default function Home() {
-  // Sample data for charts
+  const { theme } = useTheme();
+  const c = chartColors[theme];
+
   const lineChartOption = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#18181b',
-      borderColor: '#3f3f46',
-      textStyle: { color: '#a1a1aa' },
+      backgroundColor: c.tooltipBg,
+      borderColor: c.tooltipBorder,
+      textStyle: { color: c.tooltipText },
     },
     xAxis: {
       type: 'category',
       data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      axisLine: { lineStyle: { color: '#3f3f46' } },
-      axisLabel: { color: '#71717a' },
+      axisLine: { lineStyle: { color: c.axisLine } },
+      axisLabel: { color: c.axisLabel },
     },
     yAxis: {
       type: 'value',
-      axisLine: { lineStyle: { color: '#3f3f46' } },
-      axisLabel: { color: '#71717a' },
-      splitLine: { lineStyle: { color: '#27272a' } },
+      axisLine: { lineStyle: { color: c.axisLine } },
+      axisLabel: { color: c.axisLabel },
+      splitLine: { lineStyle: { color: c.splitLine } },
     },
     series: [
       {
@@ -52,21 +76,21 @@ export default function Home() {
   const barChartOption = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#18181b',
-      borderColor: '#3f3f46',
-      textStyle: { color: '#a1a1aa' },
+      backgroundColor: c.tooltipBg,
+      borderColor: c.tooltipBorder,
+      textStyle: { color: c.tooltipText },
     },
     xAxis: {
       type: 'category',
       data: ['Q1', 'Q2', 'Q3', 'Q4'],
-      axisLine: { lineStyle: { color: '#3f3f46' } },
-      axisLabel: { color: '#71717a' },
+      axisLine: { lineStyle: { color: c.axisLine } },
+      axisLabel: { color: c.axisLabel },
     },
     yAxis: {
       type: 'value',
-      axisLine: { lineStyle: { color: '#3f3f46' } },
-      axisLabel: { color: '#71717a' },
-      splitLine: { lineStyle: { color: '#27272a' } },
+      axisLine: { lineStyle: { color: c.axisLine } },
+      axisLabel: { color: c.axisLabel },
+      splitLine: { lineStyle: { color: c.splitLine } },
     },
     series: [
       {
@@ -93,14 +117,14 @@ export default function Home() {
   const pieChartOption = {
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#18181b',
-      borderColor: '#3f3f46',
-      textStyle: { color: '#a1a1aa' },
+      backgroundColor: c.tooltipBg,
+      borderColor: c.tooltipBorder,
+      textStyle: { color: c.tooltipText },
     },
     legend: {
       orient: 'vertical',
       left: 'left',
-      textStyle: { color: '#a1a1aa' },
+      textStyle: { color: c.tooltipText },
     },
     series: [
       {
@@ -110,12 +134,12 @@ export default function Home() {
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 8,
-          borderColor: '#0a0a0a',
+          borderColor: c.pieBorder,
           borderWidth: 2,
         },
         label: {
           show: true,
-          color: '#a1a1aa',
+          color: c.tooltipText,
         },
         emphasis: {
           label: {
@@ -135,7 +159,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-200 p-6 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       <div className="mx-auto">
         {/* Bento Grid - Responsive Wrapping Layout */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5" style={{ gridAutoRows: 'minmax(200px, auto)' }}>

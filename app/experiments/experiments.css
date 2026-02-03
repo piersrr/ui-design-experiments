@@ -12,17 +12,28 @@
   inherits: true;
 }
 
+/* Light theme defaults */
 .css-tabs {
-  --tab-border: 1px solid rgba(63, 63, 70, 0.8);
-  --tab-border-color: rgba(63, 63, 70, 0.8);
-  --tab-bg-outside: rgba(39, 39, 42, 0.6); /* unselected tabs - outside the border */
-  --tab-bg-inside: rgba(24, 24, 27, 0.5);  /* selected tab + panel - same, inside border */
-  --tab-text: #a1a1aa;
-  --tab-text-active: #34d399;
-  --panel-bg: rgba(24, 24, 27, 0.5);
+  --tab-border: 1px solid rgba(212, 212, 216, 0.8);
+  --tab-border-color: rgba(212, 212, 216, 0.8);
+  --tab-bg-outside: rgba(244, 244, 245, 0.6);
+  --tab-bg-inside: rgba(255, 255, 255, 0.7);
+  --tab-text: #52525b;
+  --tab-text-active: #059669;
+  --panel-bg: rgba(255, 255, 255, 0.7);
   --tab-gap-start: calc(6px + (100% - 12px) / 3);
   --tab-gap-end: calc(6px + 2 * (100% - 12px) / 3);
   transition: --border-gap-start 0.25s ease-out, --border-gap-end 0.25s ease-out;
+}
+
+.dark .css-tabs {
+  --tab-border: 1px solid rgba(63, 63, 70, 0.8);
+  --tab-border-color: rgba(63, 63, 70, 0.8);
+  --tab-bg-outside: rgba(39, 39, 42, 0.6);
+  --tab-bg-inside: rgba(24, 24, 27, 0.5);
+  --tab-text: #a1a1aa;
+  --tab-text-active: #34d399;
+  --panel-bg: rgba(24, 24, 27, 0.5);
 }
 
 /* First tab: gap starts at 6px (inside padding) so border fills left padding */
@@ -134,10 +145,18 @@
 }
 
 .css-tabs .tab-list label:hover {
+  color: var(--tab-text);
+}
+
+.dark .css-tabs .tab-list label:hover {
   color: #d4d4d8;
 }
 
 .css-tabs .tab-list label:hover .tab-label-text {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.dark .css-tabs .tab-list label:hover .tab-label-text {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -176,7 +195,17 @@
    Hover pill follows the tab under the cursor; active pill snaps on click.
    ========================================================================== */
 
+/* Light theme defaults */
 .anchor-pill-tabs {
+  --pill-border: 1px solid rgba(212, 212, 216, 0.8);
+  --pill-bg-hover: rgba(0, 0, 0, 0.05);
+  --pill-bg-active: rgba(255, 255, 255, 0.8);
+  --pill-text: #52525b;
+  --pill-text-active: #059669;
+  --panel-bg: rgba(255, 255, 255, 0.7);
+}
+
+.dark .anchor-pill-tabs {
   --pill-border: 1px solid rgba(63, 63, 70, 0.8);
   --pill-bg-hover: rgba(255, 255, 255, 0.06);
   --pill-bg-active: rgba(24, 24, 27, 0.5);
@@ -199,10 +228,15 @@
   gap: 4px;
   padding: 6px;
   margin-bottom: 0;
-  background: rgba(39, 39, 42, 0.4);
+  background: rgba(244, 244, 245, 0.6);
   border-radius: 12px 12px 0 0;
-  border: 1px solid rgba(63, 63, 70, 0.5);
+  border: 1px solid rgba(212, 212, 216, 0.6);
   border-bottom: none;
+}
+
+.dark .anchor-pill-tabs .tab-list {
+  background: rgba(39, 39, 42, 0.4);
+  border-color: rgba(63, 63, 70, 0.5);
 }
 
 /* Each label has anchor-name set inline (--tab-1, --tab-2, --tab-3) */
@@ -314,6 +348,10 @@
 }
 
 .anchor-pill-tabs .tab-list label:hover {
+  color: var(--pill-text);
+}
+
+.dark .anchor-pill-tabs .tab-list label:hover {
   color: #d4d4d8;
 }
 
@@ -340,13 +378,17 @@
   grid-column: 1;
   padding: 20px;
   background: var(--panel-bg);
-  border: 1px solid rgba(63, 63, 70, 0.8);
+  border: 1px solid rgba(212, 212, 216, 0.6);
   border-top: none;
   border-radius: 0 0 12px 12px;
   min-height: 120px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
+}
+
+.dark .anchor-pill-tabs .panel {
+  border-color: rgba(63, 63, 70, 0.8);
 }
 
 .anchor-pill-tabs #pill-1:checked ~ .panel-1,

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 interface RadarWidgetProps {
   title?: string;
@@ -14,6 +15,11 @@ interface ScanPoint {
   timestamp: number;
 }
 
+const CANVAS_COLORS = {
+  light: { bg: '#f4f4f5', grid: '#d4d4d8' },
+  dark: { bg: '#0a0a0a', grid: '#27272a' },
+} as const;
+
 export default function RadarWidget({ title = 'Radar Scan', className }: RadarWidgetProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scanPoints, setScanPoints] = useState<ScanPoint[]>([]);
@@ -21,6 +27,8 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
   const animationFrameRef = useRef<number | undefined>(undefined);
   const scanAngleRef = useRef(0);
   const lastUpdateRef = useRef<number>(performance.now());
+  const { theme } = useTheme();
+  const colors = CANVAS_COLORS[theme];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,7 +73,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
     window.addEventListener('resize', updateCanvasSize);
 
     const drawGrid = (centerX: number, centerY: number, maxRadius: number) => {
-      ctx.strokeStyle = '#27272a';
+      ctx.strokeStyle = colors.grid;
       ctx.lineWidth = 1;
 
       // Draw concentric circles
@@ -147,7 +155,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
         const centerY = canvas.height / 2;
         const maxRadius = Math.min(centerX, centerY) - 40;
         
-        ctx.fillStyle = '#0a0a0a';
+        ctx.fillStyle = colors.bg;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         drawGrid(centerX, centerY, maxRadius);
         drawPoints(centerX, centerY, maxRadius);
@@ -165,7 +173,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
       const maxRadius = Math.min(centerX, centerY) - 40;
 
       // Clear canvas
-      ctx.fillStyle = '#0a0a0a';
+      ctx.fillStyle = colors.bg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw grid
@@ -212,7 +220,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateCanvasSize);
     };
-  }, [scanPoints, isScanning]);
+  }, [scanPoints, isScanning, colors.bg, colors.grid]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -243,12 +251,12 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
   };
 
   return (
-    <div className={`relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-[#0a0a0a] p-6 transition-all hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-900/50 ${className ?? ''}`}>
+    <div className={`relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-zinc-300 bg-zinc-100 p-6 transition-all hover:border-zinc-400 hover:shadow-lg hover:shadow-zinc-300/50 dark:border-zinc-800 dark:bg-[#0a0a0a] dark:hover:border-zinc-700 dark:hover:shadow-zinc-900/50 ${className ?? ''}`}>
       <div className="mb-4 flex shrink-0 items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{title}</h3>
         <button
           onClick={() => setIsScanning(!isScanning)}
-          className="rounded-lg bg-zinc-800/50 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-700"
+          className="rounded-lg bg-zinc-300/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-400 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:bg-zinc-700"
         >
           {isScanning ? 'Pause' : 'Resume'}
         </button>
@@ -260,7 +268,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
           className="max-h-full max-w-full cursor-crosshair rounded-lg"
         />
       </div>
-      <p className="mt-2 shrink-0 text-center text-xs text-zinc-500">
+      <p className="mt-2 shrink-0 text-center text-xs text-zinc-500 dark:text-zinc-500">
         Click to add detection points
       </p>
     </div>
