@@ -26,16 +26,16 @@
 }
 
 /* First tab: gap starts at 6px (inside padding) so border fills left padding */
-.css-tabs:has(#tab1:checked) {
+.css-tabs:has(#tab-1:checked) {
   --border-gap-start: 6px;
   --border-gap-end: var(--tab-gap-start);
 }
-.css-tabs:has(#tab2:checked) {
+.css-tabs:has(#tab-2:checked) {
   --border-gap-start: var(--tab-gap-start);
   --border-gap-end: var(--tab-gap-end);
 }
 /* Last tab: gap ends at 100% - 6px so border fills right padding */
-.css-tabs:has(#tab3:checked) {
+.css-tabs:has(#tab-3:checked) {
   --border-gap-start: var(--tab-gap-end);
   --border-gap-end: calc(100% - 6px);
 }
@@ -95,15 +95,15 @@
   z-index: 0;
 }
 
-.css-tabs #tab1:checked ~ .tab-list::after {
+.css-tabs #tab-1:checked ~ .tab-list::after {
   left: 6px;
 }
 
-.css-tabs #tab2:checked ~ .tab-list::after {
+.css-tabs #tab-2:checked ~ .tab-list::after {
   left: calc(6px + (100% - 12px) / 3);
 }
 
-.css-tabs #tab3:checked ~ .tab-list::after {
+.css-tabs #tab-3:checked ~ .tab-list::after {
   left: calc(6px + 2 * (100% - 12px) / 3);
 }
 
@@ -142,16 +142,16 @@
 }
 
 /* No hover background on the active tab */
-.css-tabs #tab1:checked ~ .tab-list label[for="tab1"]:hover .tab-label-text,
-.css-tabs #tab2:checked ~ .tab-list label[for="tab2"]:hover .tab-label-text,
-.css-tabs #tab3:checked ~ .tab-list label[for="tab3"]:hover .tab-label-text {
+.css-tabs #tab-1:checked ~ .tab-list label[for="tab-1"]:hover .tab-label-text,
+.css-tabs #tab-2:checked ~ .tab-list label[for="tab-2"]:hover .tab-label-text,
+.css-tabs #tab-3:checked ~ .tab-list label[for="tab-3"]:hover .tab-label-text {
   background-color: transparent;
 }
 
 /* Active tab label: text color only; background is the sliding pill */
-.css-tabs #tab1:checked ~ .tab-list label[for="tab1"],
-.css-tabs #tab2:checked ~ .tab-list label[for="tab2"],
-.css-tabs #tab3:checked ~ .tab-list label[for="tab3"] {
+.css-tabs #tab-1:checked ~ .tab-list label[for="tab-1"],
+.css-tabs #tab-2:checked ~ .tab-list label[for="tab-2"],
+.css-tabs #tab-3:checked ~ .tab-list label[for="tab-3"] {
   color: var(--tab-text-active);
 }
 
@@ -165,8 +165,194 @@
   min-height: 120px;
 }
 
-.css-tabs #tab1:checked ~ .panel-1,
-.css-tabs #tab2:checked ~ .panel-2,
-.css-tabs #tab3:checked ~ .panel-3 {
+.css-tabs #tab-1:checked ~ .panel-1,
+.css-tabs #tab-2:checked ~ .panel-2,
+.css-tabs #tab-3:checked ~ .panel-3 {
   display: block;
+}
+
+/* ==========================================================================
+   Experiment 2: Slider pill tabs (CSS Anchor Positioning)
+   Hover pill follows the tab under the cursor; active pill snaps on click.
+   ========================================================================== */
+
+.anchor-pill-tabs {
+  --pill-border: 1px solid rgba(63, 63, 70, 0.8);
+  --pill-bg-hover: rgba(255, 255, 255, 0.06);
+  --pill-bg-active: rgba(24, 24, 27, 0.5);
+  --pill-text: #a1a1aa;
+  --pill-text-active: #34d399;
+  --panel-bg: rgba(24, 24, 27, 0.5);
+}
+
+.anchor-pill-tabs [type="radio"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.anchor-pill-tabs .tab-list {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  margin-bottom: 0;
+  background: rgba(39, 39, 42, 0.4);
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-bottom: none;
+}
+
+/* Each label has anchor-name set inline (--tab-1, --tab-2, --tab-3) */
+
+.anchor-pill-tabs .tab-list .hover-pill,
+.anchor-pill-tabs .tab-list .active-pill {
+  position: absolute;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.anchor-pill-tabs .tab-list .hover-pill {
+  position-anchor: --tab-1;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  background: var(--pill-bg-hover);
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    left 0.2s ease-out,
+    top 0.2s ease-out,
+    width 0.2s ease-out,
+    height 0.2s ease-out;
+}
+
+.anchor-pill-tabs .tab-list:has(.tab-1:hover) .hover-pill {
+  position-anchor: --tab-1;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  opacity: 1;
+}
+
+.anchor-pill-tabs .tab-list:has(.tab-2:hover) .hover-pill {
+  position-anchor: --tab-2;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  opacity: 1;
+}
+
+.anchor-pill-tabs .tab-list:has(.tab-3:hover) .hover-pill {
+  position-anchor: --tab-3;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  opacity: 1;
+}
+
+.anchor-pill-tabs .tab-list .active-pill {
+  position-anchor: --tab-1;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  background: var(--pill-bg-active);
+  border: var(--pill-border);
+  transition:
+    left 0.25s ease-out,
+    top 0.25s ease-out,
+    width 0.25s ease-out,
+    height 0.25s ease-out;
+}
+
+.anchor-pill-tabs:has(#pill-1:checked) .tab-list .active-pill {
+  position-anchor: --tab-1;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+}
+
+.anchor-pill-tabs:has(#pill-2:checked) .tab-list .active-pill {
+  position-anchor: --tab-2;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+}
+
+.anchor-pill-tabs:has(#pill-3:checked) .tab-list .active-pill {
+  position-anchor: --tab-3;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+}
+
+.anchor-pill-tabs .tab-list label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--pill-text);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.15s ease;
+}
+
+.anchor-pill-tabs .tab-list label:hover {
+  color: #d4d4d8;
+}
+
+.anchor-pill-tabs #pill-1:checked ~ .tab-list label[for="pill-1"],
+.anchor-pill-tabs #pill-2:checked ~ .tab-list label[for="pill-2"],
+.anchor-pill-tabs #pill-3:checked ~ .tab-list label[for="pill-3"] {
+  color: var(--pill-text-active);
+}
+
+/* Stack panels in grid for fade transition */
+.anchor-pill-tabs {
+  display: grid;
+  grid-template-rows: auto minmax(120px, auto);
+}
+
+.anchor-pill-tabs [type="radio"],
+.anchor-pill-tabs .tab-list {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.anchor-pill-tabs .panel {
+  grid-row: 2;
+  grid-column: 1;
+  padding: 20px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  min-height: 120px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.anchor-pill-tabs #pill-1:checked ~ .panel-1,
+.anchor-pill-tabs #pill-2:checked ~ .panel-2,
+.anchor-pill-tabs #pill-3:checked ~ .panel-3 {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
 }

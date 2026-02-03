@@ -18,7 +18,7 @@ export default function RadarWidget({ title = 'Radar Scan', className }: RadarWi
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scanPoints, setScanPoints] = useState<ScanPoint[]>([]);
   const [isScanning, setIsScanning] = useState(true);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
   const scanAngleRef = useRef(0);
   const lastUpdateRef = useRef<number>(performance.now());
 
