@@ -5,8 +5,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 Here are example screenshots of the dashboard UI:
 
 <p float="left">
-  <img src="public/screenshot1.png" alt="Dashboard Screenshot 1" width="420" />
-  <img src="public/screenshot2.png" alt="Dashboard Screenshot 2" width="420" />
+  <img src="public/screenshot1.png" alt="Dashboard Screenshot 1"  />
+  <img src="public/screenshot2.png" alt="Dashboard Screenshot 2"  />
 </p>
 
 
