@@ -8,6 +8,7 @@ import { useTheme } from '../context/ThemeContext';
 const navItems = [
   { href: '/', label: 'Dashboard' },
   { href: '/tabs', label: 'Tabs' },
+  { href: '/dropdown', label: 'Dropdown' },
 ];
 
 export default function LeftNav() {
