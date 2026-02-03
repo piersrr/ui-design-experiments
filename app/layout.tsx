@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Control Centre Dashboard",
+  title: "UI Playground",
   description: "Interactive dashboard with widgets and analytics",
 };
 

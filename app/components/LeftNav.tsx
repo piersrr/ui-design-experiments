@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '../context/ThemeContext';
@@ -18,7 +19,22 @@ export default function LeftNav() {
       className="flex w-56 shrink-0 flex-col border-r border-zinc-300 bg-zinc-100/90 p-4 dark:border-zinc-800 dark:bg-zinc-950/80"
       aria-label="Main navigation"
     >
-      <div className="mb-4 flex justify-start px-2">
+      <div className="mb-4 flex items-center justify-between px-2">
+        <a
+          href="https://piers.cc"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-100 dark:focus:ring-offset-zinc-950 rounded shrink-0"
+          aria-label="Piers – open in new tab"
+        >
+          <Image
+            src={theme === 'dark' ? '/prk-white.png' : '/prk-black.png'}
+            alt=""
+            width={120}
+            height={40}
+            className="h-10 w-auto object-contain"
+          />
+        </a>
         <button
           type="button"
           role="switch"
