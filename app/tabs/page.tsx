@@ -1,9 +1,9 @@
-import './experiments.css';
+import './tabs.css';
 import { CssTabs } from '../components/CssTabs';
 
 export const metadata = {
-  title: 'CSS Experiments',
-  description: 'Pure CSS experiments and demos',
+  title: 'Tabs',
+  description: 'Pure CSS tab demos',
 };
 
 const sharedTabs = [
@@ -61,12 +61,12 @@ const sharedTabs = [
   },
 ];
 
-export default function ExperimentsPage() {
+export default function TabsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-200 p-8 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       <div className="mx-auto max-w-3xl">
         <h1 className="mb-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-          CSS Experiments
+          Tabs
         </h1>
         <p className="mb-8 text-zinc-600 dark:text-zinc-400">
           Pure CSS demos—no JavaScript required for interactivity.
@@ -74,7 +74,7 @@ export default function ExperimentsPage() {
 
         <section className="mb-10">
           <h2 className="mb-4 text-lg font-medium text-zinc-700 dark:text-zinc-300">
-            Experiment 1: Pure CSS Tabs
+            Pure CSS Tabs
           </h2>
           <p className="mb-4 text-sm text-zinc-500">
             Tab switching is driven by hidden radio inputs and the :checked
@@ -86,7 +86,7 @@ export default function ExperimentsPage() {
 
         <section className="mb-10">
           <h2 className="mb-4 text-lg font-medium text-zinc-700 dark:text-zinc-300">
-            Experiment 2: Slider pill tabs (CSS anchors)
+            Slider pill tabs (CSS anchors)
           </h2>
           <p className="mb-4 text-sm text-zinc-500">
             Pill-style tabs using CSS Anchor Positioning. The hover highlight

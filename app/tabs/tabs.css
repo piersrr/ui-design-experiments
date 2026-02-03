@@ -89,7 +89,7 @@
   z-index: 0;
 }
 
-/* Sliding “inside” tab background – same colour as panel, shares border with panel */
+/* Sliding "inside" tab background – same colour as panel, shares border with panel */
 .css-tabs .tab-list::after {
   content: "";
   position: absolute;

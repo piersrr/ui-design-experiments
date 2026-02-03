@@ -7,7 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 
 const navItems = [
   { href: '/', label: 'Dashboard' },
-  { href: '/experiments', label: 'CSS Experiments' },
+  { href: '/tabs', label: 'Tabs' },
 ];
 
 export default function LeftNav() {
@@ -58,9 +58,7 @@ export default function LeftNav() {
         </button>
       </div>
       <div className="mb-6 px-2">
-        <span className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-          Control Centre
-        </span>
+      
       </div>
       <ul className="flex flex-col gap-1">
         {navItems.map(({ href, label }) => {
