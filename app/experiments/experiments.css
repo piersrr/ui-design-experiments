@@ -1,0 +1,172 @@
+/* Pure CSS Tabs - no JavaScript */
+
+/* Animatable gap so the top border line slides in sync with the tab pill */
+@property --border-gap-start {
+  syntax: "<length-percentage>";
+  initial-value: 0%;
+  inherits: true;
+}
+@property --border-gap-end {
+  syntax: "<length-percentage>";
+  initial-value: 100%;
+  inherits: true;
+}
+
+.css-tabs {
+  --tab-border: 1px solid rgba(63, 63, 70, 0.8);
+  --tab-border-color: rgba(63, 63, 70, 0.8);
+  --tab-bg-outside: rgba(39, 39, 42, 0.6); /* unselected tabs - outside the border */
+  --tab-bg-inside: rgba(24, 24, 27, 0.5);  /* selected tab + panel - same, inside border */
+  --tab-text: #a1a1aa;
+  --tab-text-active: #34d399;
+  --panel-bg: rgba(24, 24, 27, 0.5);
+  --tab-gap-start: calc(6px + (100% - 12px) / 3);
+  --tab-gap-end: calc(6px + 2 * (100% - 12px) / 3);
+  transition: --border-gap-start 0.25s ease-out, --border-gap-end 0.25s ease-out;
+}
+
+/* First tab: gap starts at 6px (inside padding) so border fills left padding */
+.css-tabs:has(#tab1:checked) {
+  --border-gap-start: 6px;
+  --border-gap-end: var(--tab-gap-start);
+}
+.css-tabs:has(#tab2:checked) {
+  --border-gap-start: var(--tab-gap-start);
+  --border-gap-end: var(--tab-gap-end);
+}
+/* Last tab: gap ends at 100% - 6px so border fills right padding */
+.css-tabs:has(#tab3:checked) {
+  --border-gap-start: var(--tab-gap-end);
+  --border-gap-end: calc(100% - 6px);
+}
+
+.css-tabs [type="radio"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.css-tabs .tab-list {
+  position: relative;
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  background: unset;
+  padding: 6px 6px 0 6px;
+}
+
+/* Top border line with gap (animates in sync with sliding tab) */
+.css-tabs .tab-list::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    var(--tab-border-color) 0,
+    var(--tab-border-color) var(--border-gap-start),
+    transparent var(--border-gap-start),
+    transparent var(--border-gap-end),
+    var(--tab-border-color) var(--border-gap-end),
+    var(--tab-border-color) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sliding “inside” tab background – same colour as panel, shares border with panel */
+.css-tabs .tab-list::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 0;
+  width: calc((100% - 12px) / 3);
+  background: var(--tab-bg-inside);
+  border: var(--tab-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  transition: left 0.25s ease-out;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.css-tabs #tab1:checked ~ .tab-list::after {
+  left: 6px;
+}
+
+.css-tabs #tab2:checked ~ .tab-list::after {
+  left: calc(6px + (100% - 12px) / 3);
+}
+
+.css-tabs #tab3:checked ~ .tab-list::after {
+  left: calc(6px + 2 * (100% - 12px) / 3);
+}
+
+.css-tabs .tab-list label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--tab-text);
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px;
+  transition: color 0.15s ease;
+}
+
+.css-tabs .tab-list label .tab-label-text {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.css-tabs .tab-list label:hover {
+  color: #d4d4d8;
+}
+
+.css-tabs .tab-list label:hover .tab-label-text {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* No hover background on the active tab */
+.css-tabs #tab1:checked ~ .tab-list label[for="tab1"]:hover .tab-label-text,
+.css-tabs #tab2:checked ~ .tab-list label[for="tab2"]:hover .tab-label-text,
+.css-tabs #tab3:checked ~ .tab-list label[for="tab3"]:hover .tab-label-text {
+  background-color: transparent;
+}
+
+/* Active tab label: text color only; background is the sliding pill */
+.css-tabs #tab1:checked ~ .tab-list label[for="tab1"],
+.css-tabs #tab2:checked ~ .tab-list label[for="tab2"],
+.css-tabs #tab3:checked ~ .tab-list label[for="tab3"] {
+  color: var(--tab-text-active);
+}
+
+.css-tabs .panel {
+  display: none;
+  padding: 20px;
+  background: var(--panel-bg);
+  border: var(--tab-border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  min-height: 120px;
+}
+
+.css-tabs #tab1:checked ~ .panel-1,
+.css-tabs #tab2:checked ~ .panel-2,
+.css-tabs #tab3:checked ~ .panel-3 {
+  display: block;
+}
