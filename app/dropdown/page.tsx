@@ -37,7 +37,7 @@ export default function DropdownPage() {
   // Speed = how fast the dropdown appears. Higher speed = shorter duration.
   const speedClamped = Math.max(0.25, Math.min(2, Number(speed) || 1));
   const duration = 0.35 / speedClamped;
-  const stagger = duration * 0.1;
+  const stagger = duration * 0.15;
 
   const menuTransition = elasticity
     ? {
@@ -190,22 +190,23 @@ export default function DropdownPage() {
                       key={item.id}
                       type="button"
                       className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm font-medium text-black transition-colors hover:bg-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50"
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -4 }}
-                    transition={
-                      elasticity
-                        ? {
-                            type: 'spring',
-                            stiffness: 300,
-                            damping: 25,
-                            delay: duration + stagger * i,
-                          }
-                        : {
-                            duration: duration * 0.6,
-                            delay: duration + stagger * i,
-                          }
-                    }
+                      initial={{ opacity: 0, filter: 'blur(8px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, filter: 'blur(4px)' }}
+                      transition={
+                        elasticity
+                          ? {
+                              type: 'spring',
+                              stiffness: 300,
+                              damping: 25,
+                              delay: duration + stagger * i,
+                            }
+                          : {
+                              duration: duration * 0.9,
+                              delay: duration + stagger * i,
+                              ease: 'easeOut',
+                            }
+                      }
                       onClick={() => setOpen(false)}
                     >
                       <span className="text-lg" aria-hidden>
