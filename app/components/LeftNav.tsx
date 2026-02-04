@@ -10,6 +10,7 @@ const navItems = [
   { href: '/', label: 'Dashboard' },
   { href: '/tabs', label: 'Tabs' },
   { href: '/dropdown', label: 'Dropdown' },
+  { href: '/chat', label: 'Chat' },
 ];
 
 function ThemeToggle({ theme, toggleTheme }: { theme: 'light' | 'dark'; toggleTheme: () => void }) {

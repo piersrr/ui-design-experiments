@@ -35,9 +35,9 @@ export default function RootLayout({
           }}
         />
         <ThemeProvider>
-          <div className="flex min-h-screen flex-col bg-zinc-100 dark:bg-zinc-950 md:flex-row">
+          <div className="flex h-screen flex-col bg-zinc-100 dark:bg-zinc-950 md:flex-row">
             <LeftNav />
-            <main className="min-w-0 flex-1">{children}</main>
+            <main className="min-h-0 min-w-0 flex-1 overflow-hidden">{children}</main>
           </div>
         </ThemeProvider>
       </body>
