@@ -25,3 +25,19 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* CSS marquee – seamless loop: duplicate content, animate -50% */
+.marquee-inner {
+  display: inline-flex;
+  will-change: transform;
+  animation: marqueeLeft 62s linear infinite;
+}
+
+@keyframes marqueeLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

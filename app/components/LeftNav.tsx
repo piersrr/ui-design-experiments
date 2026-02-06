@@ -7,10 +7,12 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from '../context/ThemeContext';
 
 const navItems = [
-  { href: '/', label: 'Dashboard' },
+  { href: '/', label: 'Home' },
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/tabs', label: 'Tabs' },
   { href: '/dropdown', label: 'Dropdown' },
   { href: '/chat', label: 'Chat' },
+  { href: '/carousel', label: 'Carousel' },
 ];
 
 function ThemeToggle({ theme, toggleTheme }: { theme: 'light' | 'dark'; toggleTheme: () => void }) {
