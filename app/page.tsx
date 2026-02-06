@@ -12,8 +12,8 @@ const pages = [
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-4xl">
+    <div className="h-full min-h-0 overflow-auto p-6 md:p-10">
+      <div className="flex min-h-full flex-col items-center justify-center w-full max-w-4xl">
         <h1 className="mb-2 text-2xl font-semibold text-zinc-800 dark:text-zinc-200 md:text-3xl">
           UI Playground
         </h1>

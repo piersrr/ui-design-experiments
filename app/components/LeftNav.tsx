@@ -112,10 +112,10 @@ export default function LeftNav() {
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </header>
 
-        {/* Mobile: dropdown tray in flow — expands and pushes content down */}
+        {/* Mobile: dropdown tray in flow — expands and pushes content down; tall enough for all items */}
         <div
-          className="overflow-hidden transition-[max-height] duration-200 ease-out md:hidden"
-          style={{ maxHeight: mobileOpen ? '12rem' : '0' }}
+          className="overflow-y-auto overflow-x-hidden transition-[max-height] duration-200 ease-out md:hidden"
+          style={{ maxHeight: mobileOpen ? 'min(24rem, 70vh)' : '0' }}
         >
           <nav
             className="border-b border-zinc-300 bg-zinc-100/95 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/95"
