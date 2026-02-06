@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'motion/react';
+import { motion, useMotionValue, useMotionValueEvent, animate } from 'motion/react';
 
 const CARD_COUNT = 8;
 const CARD_WIDTH = 280;
@@ -22,6 +22,17 @@ function MotionCarousel() {
 
   const dragConstraints = { left: maxScroll, right: 0 };
 
+  const FADE_ZONE = 80;
+  // Smooth fade: left fade fades out as we approach start (x→0), right fade fades out as we approach end (x→maxScroll)
+  const [maskImage, setMaskImage] = useState('linear-gradient(to right, black 0, black calc(100% - 60px), transparent 100%)');
+  useMotionValueEvent(x, 'change', (v) => {
+    const leftAlpha = v >= 0 ? 1 : Math.max(0, Math.min(1, 1 + v / FADE_ZONE));
+    const rightAlpha = v <= maxScroll ? 1 : Math.max(0, Math.min(1, 1 - (v - maxScroll) / FADE_ZONE));
+    setMaskImage(
+      `linear-gradient(to right, rgba(0,0,0,${leftAlpha}) 0, black 60px, black calc(100% - 60px), rgba(0,0,0,${rightAlpha}) 100%)`
+    );
+  });
+
   const goTo = (i: number) => {
     const target = -i * (CARD_WIDTH + CARD_GAP);
     animate(x, target, { type: 'spring', stiffness: 300, damping: 35 });
@@ -41,8 +52,8 @@ function MotionCarousel() {
         ref={containerRef}
         className="relative overflow-hidden py-2"
         style={{
-          maskImage: 'linear-gradient(to right, transparent 0, black 60px, black calc(100% - 60px), transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0, black 60px, black calc(100% - 60px), transparent 100%)',
+          maskImage,
+          WebkitMaskImage: maskImage,
         }}
       >
         <motion.div

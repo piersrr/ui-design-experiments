@@ -69,7 +69,10 @@ export default function LeftNav() {
   const navLinks = (
     <ul className="flex flex-col gap-0.5">
       {navItems.map(({ href, label }) => {
-        const isActive = pathname === href;
+        const isActive =
+          href === '/'
+            ? pathname === '/'
+            : pathname === href || pathname.startsWith(href + '/');
         return (
           <li key={href}>
             <Link
