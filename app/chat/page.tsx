@@ -27,6 +27,9 @@ const DEFAULT_MESSAGES: Message[] = [
   },
 ];
 
+const RESPONSE_DELAY_MS = 1800;
+const TYPING_START_DELAY_MS = 500; // delay before typing indicator appears
+
 function getChatTitle(messages: Message[]): string {
   const firstUser = messages.find((m) => m.role === 'user');
   if (firstUser) {
@@ -34,6 +37,128 @@ function getChatTitle(messages: Message[]): string {
     return text.length < firstUser.content.length ? `${text}…` : text;
   }
   return 'New chat';
+}
+
+function toDateKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateLabel(dateKey: string): string {
+  const d = new Date(dateKey + 'T12:00:00');
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (toDateKey(today) === dateKey) return 'Today';
+  if (toDateKey(yesterday) === dateKey) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function groupMessagesByDay(messages: Message[]): { dateKey: string; messages: Message[] }[] {
+  const byDay = new Map<string, Message[]>();
+  for (const m of messages) {
+    const key = toDateKey(m.timestamp);
+    if (!byDay.has(key)) byDay.set(key, []);
+    byDay.get(key)!.push(m);
+  }
+  return Array.from(byDay.entries()).map(([dateKey, msgs]) => ({ dateKey, messages: msgs }));
+}
+
+// --- Message context menu (hover actions) ---
+function MessageActions({
+  message,
+  onEdit,
+  onDelete,
+  onForward,
+  onQuote,
+}: {
+  message: Message;
+  onEdit: () => void;
+  onDelete: () => void;
+  onForward: () => void;
+  onQuote: () => void;
+}) {
+  const isUser = message.role === 'user';
+  return (
+    <div
+      className="flex gap-0.5 rounded-lg border border-zinc-200 bg-white px-1 py-1 shadow-md dark:border-zinc-700 dark:bg-zinc-800"
+      role="toolbar"
+      aria-label="Message actions"
+    >
+      {isUser && (
+        <>
+          <button
+            type="button"
+            onClick={onEdit}
+            className="rounded p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
+            title="Edit"
+            aria-label="Edit message"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className="rounded p-1.5 text-zinc-500 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+            title="Delete"
+            aria-label="Delete message"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </>
+      )}
+      <button
+        type="button"
+        onClick={onForward}
+        className="rounded p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
+        title="Forward"
+        aria-label="Forward message"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onClick={onQuote}
+        className="rounded p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
+        title="Quote"
+        aria-label="Quote message"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20V4c0-1.105.895-2 2-2h14c1.105 0 2 .895 2 2v8z" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+// --- Typing indicator ---
+function TypingIndicator() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="flex flex-col items-start"
+    >
+      <div className="flex max-w-[85%] items-center gap-1 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+        <span className="flex gap-1">
+          {[0, 1, 2].map((i) => (
+            <motion.span
+              key={i}
+              className="h-2 w-2 rounded-full bg-zinc-400 dark:bg-zinc-500"
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+            />
+          ))}
+        </span>
+      </div>
+    </motion.div>
+  );
 }
 
 export default function ChatPage() {
@@ -45,11 +170,16 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [mobileDetailsOpen, setMobileDetailsOpen] = useState(false);
   const [mobileChatDropdownOpen, setMobileChatDropdownOpen] = useState(false);
+  const [isAssistantTyping, setIsAssistantTyping] = useState(false);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const [forwardToast, setForwardToast] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const prevMessageCountRef = useRef(0);
   const detailsPopoverRef = useRef<HTMLDivElement>(null);
   const contextBarRef = useRef<HTMLDivElement>(null);
+  const responseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const typingStartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const messages = messagesByChatId[activeChatId] ?? [];
   const activeChat = chats.find((c) => c.id === activeChatId);
@@ -82,6 +212,14 @@ export default function ChatPage() {
     return () => document.removeEventListener('click', handleClick);
   }, [mobileDetailsOpen, mobileChatDropdownOpen]);
 
+  // Clear response/typing timeouts on unmount or chat switch
+  useEffect(() => {
+    return () => {
+      if (responseTimeoutRef.current) clearTimeout(responseTimeoutRef.current);
+      if (typingStartTimeoutRef.current) clearTimeout(typingStartTimeoutRef.current);
+    };
+  }, [activeChatId]);
+
   function addChat() {
     const id = crypto.randomUUID();
     setChats((prev) => [...prev, { id, title: 'New chat' }]);
@@ -92,6 +230,10 @@ export default function ChatPage() {
   function sendMessage() {
     const trimmed = input.trim();
     if (!trimmed) return;
+
+    if (responseTimeoutRef.current) clearTimeout(responseTimeoutRef.current);
+    if (typingStartTimeoutRef.current) clearTimeout(typingStartTimeoutRef.current);
+    setIsAssistantTyping(false);
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -110,7 +252,18 @@ export default function ChatPage() {
     );
     setInput('');
 
-    setTimeout(() => {
+    typingStartTimeoutRef.current = setTimeout(() => {
+      typingStartTimeoutRef.current = null;
+      setIsAssistantTyping(true);
+    }, TYPING_START_DELAY_MS);
+
+    responseTimeoutRef.current = setTimeout(() => {
+      responseTimeoutRef.current = null;
+      if (typingStartTimeoutRef.current) {
+        clearTimeout(typingStartTimeoutRef.current);
+        typingStartTimeoutRef.current = null;
+      }
+      setIsAssistantTyping(false);
       const reply: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -121,7 +274,32 @@ export default function ChatPage() {
         ...prev,
         [activeChatId]: [...(prev[activeChatId] ?? []), reply],
       }));
-    }, 600);
+    }, RESPONSE_DELAY_MS);
+  }
+
+  function deleteMessage(messageId: string) {
+    setMessagesByChatId((prev) => {
+      const list = prev[activeChatId] ?? [];
+      return { ...prev, [activeChatId]: list.filter((m) => m.id !== messageId) };
+    });
+    setHoveredMessageId(null);
+  }
+
+  function editMessage(msg: Message) {
+    setInput(msg.content);
+    deleteMessage(msg.id);
+    inputRef.current?.focus();
+  }
+
+  function quoteMessage(msg: Message) {
+    const quoted = msg.content.split('\n').map((line) => `> ${line}`).join('\n');
+    setInput((prev) => (prev ? `${prev}\n\n${quoted}` : quoted));
+    inputRef.current?.focus();
+  }
+
+  function forwardMessage(_msg: Message) {
+    setForwardToast('Forward (not implemented)');
+    setTimeout(() => setForwardToast(null), 2000);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -335,40 +513,76 @@ export default function ChatPage() {
 
             <div
               ref={listRef}
-              className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 pr-4 md:pr-60 lg:pr-64"
+              className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 pr-4 md:pr-60 lg:pr-64 bg-zinc-50 dark:bg-zinc-900"
               aria-label="Message list"
             >
-              <div className="mx-auto max-w-2xl space-y-4">
-                <AnimatePresence initial={false}>
-                  {messages.map((msg) => (
-                    <motion.div
-                      key={msg.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                      className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-                    >
-                      <div
-                        className={`max-w-[85%] rounded-lg px-4 py-2.5 text-sm ${
-                          msg.role === 'user'
-                            ? 'bg-emerald-600 text-white dark:bg-emerald-500'
-                            : 'border border-zinc-200 bg-white text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100'
-                        }`}
+              <div className="mx-auto max-w-2xl space-y-6">
+                {groupMessagesByDay(messages).map(({ dateKey, messages: dayMessages }) => (
+                  <div key={dateKey} className="space-y-4">
+                    <div className="sticky top-0 z-10 -mx-2 flex justify-center py-2 bg-zinc-50 dark:bg-zinc-900">
+                      <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-500 shadow-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                        {formatDateLabel(dateKey)}
+                      </span>
+                    </div>
+                    {dayMessages.map((msg) => (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                        className={`relative flex flex-col pt-10 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
+                        onMouseEnter={() => setHoveredMessageId(msg.id)}
+                        onMouseLeave={() => setHoveredMessageId(null)}
                       >
-                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-                      </div>
-                      <p className="mt-1 text-xs text-zinc-500/40 dark:text-zinc-500">
-                        {msg.timestamp.toLocaleTimeString('en-GB', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false,
-                        })}
-                      </p>
-                    </motion.div>
-                  ))}
+                        <div
+                          className={`relative w-full max-w-[85%] flex flex-col pb-14 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
+                        >
+                          <div
+                            className={`rounded-lg px-4 py-2.5 text-sm ${
+                              msg.role === 'user'
+                                ? 'bg-emerald-600 text-white dark:bg-emerald-500'
+                                : 'border border-zinc-200 bg-white text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100'
+                            }`}
+                          >
+                            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                          </div>
+                          <p
+                            className={`mt-1 text-xs text-zinc-500/40 dark:text-zinc-500`}
+                          >
+                            {msg.timestamp.toLocaleTimeString('en-GB', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                          </p>
+                          {hoveredMessageId === msg.id && (
+                            <div
+                              className={`absolute -top-10 mt-1 ${msg.role === 'user' ? 'right-0' : 'left-0'}`}
+                            >
+                              <MessageActions
+                                message={msg}
+                                onEdit={() => editMessage(msg)}
+                                onDelete={() => deleteMessage(msg.id)}
+                                onForward={() => forwardMessage(msg)}
+                                onQuote={() => quoteMessage(msg)}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ))}
+                <AnimatePresence initial={false}>
+                  {isAssistantTyping && <TypingIndicator key="typing" />}
                 </AnimatePresence>
               </div>
             </div>
+            {forwardToast && (
+              <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-zinc-800 px-4 py-2 text-sm text-white shadow-lg dark:bg-zinc-700">
+                {forwardToast}
+              </div>
+            )}
 
             <div className="shrink-0 border-t border-zinc-200 bg-white p-2 pr-4 md:pr-60 lg:pr-64 dark:border-zinc-800 dark:bg-zinc-950">
               <div className="mx-auto flex max-w-2xl gap-2">

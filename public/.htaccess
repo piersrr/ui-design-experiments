@@ -1,0 +1,15 @@
+# Next.js static export on Apache shared hosting
+# Copy this to your document root if you deploy the contents of "out/" there.
+
+# Serve directory index for clean URLs (e.g. /tabs/ -> /tabs/index.html)
+DirectoryIndex index.html
+
+# Optional: allow RSC/prefetch requests (some hosts block these and return 403 on client-side nav)
+<IfModule mod_headers.c>
+  # Uncomment if your host blocks Next.js client-side navigation requests:
+  # SetEnvIf Request_URI "^/" allow_rsc
+  # Header set Accept "*/*" env=allow_rsc
+</IfModule>
+
+# Optional: if 403 persists, ask your host to whitelist Next.js fetch headers
+# (Next-Router-Prefetch, RSC, etc.) in ModSecurity/WAF for your domain.
