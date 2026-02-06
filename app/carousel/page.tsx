@@ -1,7 +1,19 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useMotionValueEvent, animate } from 'motion/react';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+  return isMobile;
+}
 
 const CARD_COUNT = 8;
 const CARD_WIDTH = 280;
@@ -16,6 +28,7 @@ const cards = Array.from({ length: CARD_COUNT }, (_, i) => ({
 
 function MotionCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const [index, setIndex] = useState(0);
   const x = useMotionValue(0);
   const maxScroll = -((CARD_WIDTH + CARD_GAP) * (CARD_COUNT - 1));
@@ -23,7 +36,6 @@ function MotionCarousel() {
   const dragConstraints = { left: maxScroll, right: 0 };
 
   const FADE_ZONE = 80;
-  // Smooth fade: left fade fades out as we approach start (x→0), right fade fades out as we approach end (x→maxScroll)
   const [maskImage, setMaskImage] = useState('linear-gradient(to right, black 0, black calc(100% - 60px), transparent 100%)');
   useMotionValueEvent(x, 'change', (v) => {
     const leftAlpha = v >= 0 ? 1 : Math.max(0, Math.min(1, 1 + v / FADE_ZONE));
@@ -51,10 +63,11 @@ function MotionCarousel() {
       <div
         ref={containerRef}
         className="relative overflow-hidden py-2"
-        style={{
-          maskImage,
-          WebkitMaskImage: maskImage,
-        }}
+        style={
+          isMobile
+            ? undefined
+            : { maskImage, WebkitMaskImage: maskImage }
+        }
       >
         <motion.div
           className="flex cursor-grab touch-pan-y gap-4 active:cursor-grabbing"
