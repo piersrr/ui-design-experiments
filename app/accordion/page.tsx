@@ -6,26 +6,17 @@ import { ChevronDown } from 'lucide-react';
 
 type AccentKey = 'design' | 'motion' | 'details';
 
-const accentConfig: Record<
-  AccentKey,
-  { border: string; header: string; hover: string; chevron: string }
-> = {
+const accentConfig: Record<AccentKey, { header: string; chevron: string }> = {
   design: {
-    border: 'border-l-sky-500',
     header: 'text-sky-700 dark:text-sky-300',
-    hover: 'hover:bg-sky-100 dark:hover:bg-sky-900/40',
     chevron: 'text-sky-500 dark:text-sky-400',
   },
   motion: {
-    border: 'border-l-violet-500',
     header: 'text-violet-700 dark:text-violet-300',
-    hover: 'hover:bg-violet-100 dark:hover:bg-violet-900/40',
     chevron: 'text-violet-500 dark:text-violet-400',
   },
   details: {
-    border: 'border-l-amber-500',
     header: 'text-amber-700 dark:text-amber-300',
-    hover: 'hover:bg-amber-100 dark:hover:bg-amber-900/40',
     chevron: 'text-amber-500 dark:text-amber-400',
   },
 };
@@ -82,56 +73,43 @@ function AccordionItem({
     return () => ro.disconnect();
   }, [content]);
 
-  const R = 16; // 1rem, matches rounded-2xl
+  const closedRadius =
+    isFirstClosed && isLastClosed
+      ? 'rounded-2xl'
+      : isFirstClosed
+        ? 'rounded-t-2xl'
+        : isLastClosed
+          ? 'rounded-b-2xl'
+          : '';
 
-  const containerRadius = {
-    borderTopLeftRadius: isOpen ? R : isFirstClosed ? R : 0,
-    borderTopRightRadius: isOpen ? R : isFirstClosed ? R : 0,
-    borderBottomLeftRadius: isOpen ? R : isLastClosed ? R : 0,
-    borderBottomRightRadius: isOpen ? R : isLastClosed ? R : 0,
-  };
+  const buttonRadius = isOpen
+    ? 'rounded-t-2xl'
+    : isFirstClosed && isLastClosed
+      ? 'rounded-2xl'
+      : isFirstClosed
+        ? 'rounded-t-2xl'
+        : isLastClosed
+          ? 'rounded-b-2xl'
+          : '';
 
-  const buttonRadius = {
-    borderTopLeftRadius: isOpen ? R : isFirstClosed ? R : 0,
-    borderTopRightRadius: isOpen ? R : isFirstClosed ? R : 0,
-    borderBottomLeftRadius: isOpen ? 0 : isLastClosed ? R : 0,
-    borderBottomRightRadius: isOpen ? 0 : isLastClosed ? R : 0,
-  };
-
-  const spring = { type: 'spring' as const, stiffness: 350, damping: 32 };
-  // When radius is going to 0, snap instantly so we don't get a "squash" while height collapses
-  const containerTransition = {
-    borderTopLeftRadius: containerRadius.borderTopLeftRadius === 0 ? { duration: 0 } : spring,
-    borderTopRightRadius: containerRadius.borderTopRightRadius === 0 ? { duration: 0 } : spring,
-    borderBottomLeftRadius: containerRadius.borderBottomLeftRadius === 0 ? { duration: 0 } : spring,
-    borderBottomRightRadius: containerRadius.borderBottomRightRadius === 0 ? { duration: 0 } : spring,
-  };
-  const buttonTransition = {
-    borderTopLeftRadius: buttonRadius.borderTopLeftRadius === 0 ? { duration: 0 } : spring,
-    borderTopRightRadius: buttonRadius.borderTopRightRadius === 0 ? { duration: 0 } : spring,
-    borderBottomLeftRadius: buttonRadius.borderBottomLeftRadius === 0 ? { duration: 0 } : spring,
-    borderBottomRightRadius: buttonRadius.borderBottomRightRadius === 0 ? { duration: 0 } : spring,
-  };
+  const spring = { type: 'spring' as const, stiffness: 300, damping: 30 };
 
   return (
     <motion.div
       layout
-      animate={containerRadius}
-      transition={containerTransition}
+      transition={spring}
       className={
         isOpen
-          ? `my-3 bg-white  dark:border-zinc-700 dark:bg-zinc-900 transition-colors duration-200`
-          : `bg-white dark:border-zinc-700 dark:bg-zinc-900/80 ${!isFirstClosed ? 'border-t-0' : ''}`
+          ? 'my-3 rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-900'
+          : `border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900/80 ${closedRadius} ${!isFirstClosed ? 'border-t-0' : ''}`
       }
     >
-      <motion.button
+      <button
         type="button"
         onClick={onToggle}
-        animate={buttonRadius}
-        transition={buttonTransition}
         className={`
-          flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-medium transition
-          ${isOpen ? `bg-white dark:bg-zinc-900` : 'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/80'}
+          flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-medium transition-colors ${buttonRadius}
+          ${isOpen ? `bg-white dark:bg-zinc-900 ${accent.header}` : 'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/80'}
         `}
         aria-expanded={isOpen}
         aria-controls={`accordion-content-${id}`}
@@ -140,13 +118,13 @@ function AccordionItem({
         <span>{title}</span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={spring}
           className={`shrink-0 ${isOpen ? accent.chevron : 'text-zinc-500 dark:text-zinc-400'}`}
           aria-hidden
         >
           <ChevronDown className="h-5 w-5" />
         </motion.span>
-      </motion.button>
+      </button>
       <motion.div
         id={`accordion-content-${id}`}
         role="region"
@@ -154,15 +132,17 @@ function AccordionItem({
         initial={false}
         animate={{
           height: isOpen ? height : 0,
-          borderBottomLeftRadius: isOpen ? R : 0,
-          borderBottomRightRadius: isOpen ? R : 0,
+          opacity: isOpen ? 1 : 0,
         }}
-        transition={spring}
+        transition={{
+          height: spring,
+          opacity: { duration: 0.2 },
+        }}
         style={{ overflow: 'hidden' }}
       >
         <div
           ref={contentRef}
-          className="border-t border-zinc-200 bg-white px-5 py-4 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
+          className={`bg-white px-5 py-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400 ${isOpen ? 'rounded-b-2xl' : ''}`}
         >
           {content}
         </div>
@@ -189,7 +169,7 @@ export default function AccordionPage() {
           Fluid expand/collapse with Motion and rounded corners.
         </p>
 
-        <div className="flex flex-col">
+        <motion.div className="flex flex-col" layout>
           {items.map((item, index) => (
             <AccordionItem
               key={item.id}
@@ -204,7 +184,7 @@ export default function AccordionPage() {
               isLastClosed={index === lastClosed}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
