@@ -41,3 +41,61 @@ body {
     transform: translateX(-50%);
   }
 }
+
+/* Bloom / HDR glow for animation state icons */
+.state-bloom {
+  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 12px currentColor);
+}
+
+.state-bloom-strong {
+  filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 20px currentColor) drop-shadow(0 0 32px currentColor);
+}
+
+.state-hdr {
+  filter: contrast(1.15) saturate(1.2);
+}
+
+@keyframes state-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 12px currentColor);
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 24px currentColor);
+    opacity: 0.9;
+  }
+}
+
+@keyframes state-glow-breathe {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px currentColor) drop-shadow(0 0 28px currentColor);
+  }
+}
+
+.animate-bloom-pulse {
+  animation: state-glow-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-bloom-breathe {
+  animation: state-glow-breathe 2s ease-in-out infinite;
+}
+
+/* Square wipe left to right (for rendering state) */
+@keyframes wipe-right {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  70% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-wipe-right {
+  animation: wipe-right 1.5s ease-in-out infinite;
+}

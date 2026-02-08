@@ -9,10 +9,13 @@ import { useTheme } from '../context/ThemeContext';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/dashboard', label: 'Dashboard' },
+  { href: '/feed', label: 'Feed' },
   { href: '/tabs', label: 'Tabs' },
   { href: '/dropdown', label: 'Dropdown' },
   { href: '/chat', label: 'Chat' },
   { href: '/carousel', label: 'Carousel' },
+  { href: '/animation-states', label: 'Animation states' },
+  { href: '/accordion', label: 'Accordion' },
 ];
 
 function ThemeToggle({ theme, toggleTheme }: { theme: 'light' | 'dark'; toggleTheme: () => void }) {
