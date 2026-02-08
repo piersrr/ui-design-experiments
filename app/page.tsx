@@ -3,11 +3,14 @@
 import Link from 'next/link';
 
 const pages = [
-  { href: '/dashboard', label: 'Dashboard', description: 'KPIs, charts and analytics' },
-  { href: '/tabs', label: 'Tabs', description: 'Tabbed content components' },
-  { href: '/dropdown', label: 'Dropdown', description: 'Dropdown menus and selects' },
-  { href: '/chat', label: 'Chat', description: 'Chat interface and messaging' },
-  { href: '/carousel', label: 'Carousel', description: 'Motion card carousel and CSS marquee' },
+  { href: '/dashboard/', label: 'Dashboard', description: 'KPIs, charts and analytics' },
+  { href: '/tabs/', label: 'Tabs', description: 'Tabbed content components' },
+  { href: '/dropdown/', label: 'Dropdown', description: 'Dropdown menus and selects' },
+  { href: '/chat/', label: 'Chat', description: 'Chat interface and messaging' },
+  { href: '/carousel/', label: 'Carousel', description: 'Motion card carousel and CSS marquee' },
+  { href: '/accordion/', label: 'Accordion', description: 'Fluid expand/collapse with Motion' },
+  { href: '/feed/', label: 'Feed', description: 'Feed and activity views' },
+  { href: '/animation-states/', label: 'Animation states', description: 'Animation state demos' },
 ];
 
 export default function Home() {
