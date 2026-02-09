@@ -48,16 +48,14 @@ function AccordionItem({
   content,
   isOpen,
   onToggle,
-  isFirstClosed,
-  isLastClosed,
+  isFirst,
 }: {
   id: string;
   title: string;
   content: string;
   isOpen: boolean;
   onToggle: () => void;
-  isFirstClosed: boolean;
-  isLastClosed: boolean;
+  isFirst: boolean;
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
@@ -73,42 +71,21 @@ function AccordionItem({
     return () => ro.disconnect();
   }, [content]);
 
-  const closedRadius =
-    isFirstClosed && isLastClosed
-      ? 'rounded-2xl'
-      : isFirstClosed
-        ? 'rounded-t-2xl'
-        : isLastClosed
-          ? 'rounded-b-2xl'
-          : '';
-
-  const buttonRadius = isOpen
-    ? 'rounded-t-2xl'
-    : isFirstClosed && isLastClosed
-      ? 'rounded-2xl'
-      : isFirstClosed
-        ? 'rounded-t-2xl'
-        : isLastClosed
-          ? 'rounded-b-2xl'
-          : '';
-
-  const spring = { type: 'spring' as const, stiffness: 300, damping: 30 };
+  const spring = { type: 'spring' as const, stiffness: 200, damping: 22 };
 
   return (
-    <motion.div
-      layout
-      transition={spring}
+    <div
       className={
-        isOpen
-          ? 'my-3 rounded-2xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-900'
-          : `border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900/80 ${closedRadius} ${!isFirstClosed ? 'border-t-0' : ''}`
+        isFirst
+          ? 'border-t-0'
+          : 'border-t border-zinc-200 dark:border-zinc-600'
       }
     >
       <button
         type="button"
         onClick={onToggle}
         className={`
-          flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-medium transition-colors ${buttonRadius}
+          flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-medium transition-colors
           ${isOpen ? `bg-white dark:bg-zinc-900 ${accent.header}` : 'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/80'}
         `}
         aria-expanded={isOpen}
@@ -142,22 +119,17 @@ function AccordionItem({
       >
         <div
           ref={contentRef}
-          className={`bg-white px-5 py-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400 ${isOpen ? 'rounded-b-2xl' : ''}`}
+          className="bg-white px-5 py-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400"
         >
           {content}
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function AccordionPage() {
   const [openId, setOpenId] = useState<string | null>(items[0].id);
-  const closedIndices = items
-    .map((item, i) => (openId === item.id ? -1 : i))
-    .filter((i) => i >= 0);
-  const firstClosed = closedIndices[0] ?? -1;
-  const lastClosed = closedIndices[closedIndices.length - 1] ?? -1;
 
   return (
     <div className="min-h-screen bg-background">
@@ -169,22 +141,23 @@ export default function AccordionPage() {
           Fluid expand/collapse with Motion and rounded corners.
         </p>
 
-        <motion.div className="flex flex-col" layout>
-          {items.map((item, index) => (
-            <AccordionItem
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              content={item.content}
-              isOpen={openId === item.id}
-              onToggle={() =>
-                setOpenId((prev) => (prev === item.id ? null : item.id))
-              }
-              isFirstClosed={index === firstClosed}
-              isLastClosed={index === lastClosed}
-            />
-          ))}
-        </motion.div>
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-600 dark:bg-zinc-900">
+          <motion.div className="flex flex-col" layout transition={{ type: 'spring', stiffness: 200, damping: 22 }}>
+            {items.map((item, index) => (
+              <AccordionItem
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                content={item.content}
+                isOpen={openId === item.id}
+                onToggle={() =>
+                  setOpenId((prev) => (prev === item.id ? null : item.id))
+                }
+                isFirst={index === 0}
+              />
+            ))}
+          </motion.div>
+        </div>
       </div>
     </div>
   );
