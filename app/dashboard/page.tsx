@@ -3,7 +3,11 @@
 import KPIWidget from '../components/KPIWidget';
 import ChartWidget from '../components/ChartWidget';
 import RadarWidget from '../components/RadarWidget';
+import ActivityChartWidget from '../components/ActivityChartWidget';
+import RecentActivityWidget from '../components/RecentActivityWidget';
+import TeamMembersWidget from '../components/TeamMembersWidget';
 import { useTheme } from '../context/ThemeContext';
+import { TrendingUp, Users, Activity, Clock } from 'lucide-react';
 
 const chartColors = {
   light: {
@@ -54,6 +58,7 @@ export default function DashboardPage() {
         data: [820, 932, 901, 934, 1290, 1330, 1320],
         type: 'line',
         smooth: true,
+        showSymbol: false,
         areaStyle: {
           color: {
             type: 'linear',
@@ -62,7 +67,7 @@ export default function DashboardPage() {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(16, 185, 129, 0.3)' },
+              { offset: 0, color: 'rgba(16, 185, 129, 0.4)' },
               { offset: 1, color: 'rgba(16, 185, 129, 0.05)' },
             ],
           },
@@ -71,6 +76,7 @@ export default function DashboardPage() {
         itemStyle: { color: '#10b981' },
       },
     ],
+    grid: { top: 10, bottom: 20, left: 40, right: 10 },
   };
 
   const barChartOption = {
@@ -96,6 +102,7 @@ export default function DashboardPage() {
       {
         data: [120, 200, 150, 180],
         type: 'bar',
+        barWidth: '60%',
         itemStyle: {
           color: {
             type: 'linear',
@@ -112,6 +119,7 @@ export default function DashboardPage() {
         },
       },
     ],
+    grid: { top: 10, bottom: 20, left: 30, right: 10 },
   };
 
   const pieChartOption = {
@@ -125,34 +133,38 @@ export default function DashboardPage() {
       orient: 'vertical',
       left: 'left',
       textStyle: { color: c.tooltipText },
+      itemWidth: 10,
+      itemHeight: 10,
     },
     series: [
       {
         name: 'Distribution',
         type: 'pie',
-        radius: ['40%', '70%'],
+        radius: ['50%', '80%'],
+        center: ['60%', '50%'],
         avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 8,
+          borderRadius: 5,
           borderColor: c.pieBorder,
           borderWidth: 2,
         },
         label: {
-          show: true,
-          color: c.tooltipText,
+          show: false,
+          position: 'center'
         },
         emphasis: {
           label: {
             show: true,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: 'bold',
+            color: c.tooltipText
           },
         },
         data: [
-          { value: 335, name: 'Category A', itemStyle: { color: '#10b981' } },
-          { value: 310, name: 'Category B', itemStyle: { color: '#059669' } },
-          { value: 234, name: 'Category C', itemStyle: { color: '#047857' } },
-          { value: 135, name: 'Category D', itemStyle: { color: '#065f46' } },
+          { value: 335, name: 'Direct', itemStyle: { color: '#10b981' } },
+          { value: 310, name: 'Social', itemStyle: { color: '#059669' } },
+          { value: 234, name: 'Ads', itemStyle: { color: '#047857' } },
+          { value: 135, name: 'Others', itemStyle: { color: '#065f46' } },
         ],
       },
     ],
@@ -160,118 +172,86 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-200 p-6 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <div className="mx-auto">
-        {/* Bento Grid - Responsive Wrapping Layout */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5" style={{ gridAutoRows: 'minmax(200px, auto)' }}>
-          {/* Top row: 4 KPI widgets stretching full width */}
-          <div className="col-span-full grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mx-auto max-w-[1920px]">
+        {/* Header Area */}
+        <div className="mb-8 flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">Dashboard Overview</h1>
+          <p className="text-zinc-500 dark:text-zinc-400">Welcome back, Piers. Here&apos;s what&apos;s happening with your projects today.</p>
+        </div>
+
+        {/* Bento Grid Layout - Highly Dense */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-12 xl:gap-6">
+
+          {/* Row 1: KPIs (Top 4 items) */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-3">
             <KPIWidget
-            title="Total Revenue"
-            value="$124,563"
-            change={12.5}
-            changeLabel="vs last month"
-            icon={
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            }
-          />
-          <KPIWidget
-            title="Active Users"
-            value="8,432"
-            change={8.2}
-            changeLabel="vs last week"
-            icon={
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            }
-          />
-          <KPIWidget
-            title="Conversion Rate"
-            value="3.24%"
-            change={-2.1}
-            changeLabel="vs last month"
-            icon={
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                />
-              </svg>
-            }
-          />
-          <KPIWidget
-            title="Avg. Response Time"
-            value="142ms"
-            change={-15.3}
-            changeLabel="vs last week"
-            icon={
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            }
-          />
+              title="Total Revenue"
+              value="$124,563"
+              change={12.5}
+              changeLabel="vs last month"
+              icon={<TrendingUp className="h-5 w-5" />}
+            />
+          </div>
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-3">
+            <KPIWidget
+              title="Active Users"
+              value="8,432"
+              change={8.2}
+              changeLabel="vs last week"
+              icon={<Users className="h-5 w-5" />}
+            />
+          </div>
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-3">
+            <KPIWidget
+              title="Conversion Rate"
+              value="3.24%"
+              change={-2.1}
+              changeLabel="vs last month"
+              icon={<Activity className="h-5 w-5" />}
+            />
+          </div>
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-3">
+            <KPIWidget
+              title="Avg. Response"
+              value="142ms"
+              change={-15.3}
+              changeLabel="vs last week"
+              icon={<Clock className="h-5 w-5" />}
+            />
           </div>
 
-          {/* Charts (left 2/3) + System Scan (right 1/3, 2 rows) */}
-          <div
-            className="col-span-full grid grid-cols-1 gap-6 xl:grid-cols-3"
-            style={{
-              gridTemplateRows: 'repeat(3, minmax(280px, auto))',
-            }}
-          >
-            <div className="xl:col-span-2">
-              <ChartWidget title="Weekly Performance" option={lineChartOption} height={280} />
-            </div>
-            <div className="flex min-h-[400px] flex-col xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:self-stretch">
-              <RadarWidget title="System Scan" className="min-h-0 flex-1" />
-            </div>
-            <div>
-              <ChartWidget title="Quarterly Results" option={barChartOption} height={280} />
-            </div>
-            <div>
-              <ChartWidget title="Distribution" option={pieChartOption} height={280} />
-            </div>
-
+          {/* Row 2: Main Chart (Wide) & Team (Narrow) */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-8">
+            <ChartWidget title="Revenue Performance" option={lineChartOption} height={320} />
           </div>
+          <div className="col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-4">
+            <TeamMembersWidget title="Team Status" />
+          </div>
+
+          {/* Row 3: Activity Heatmap (Wide) */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-8">
+            <ActivityChartWidget title="Contribution Activity" />
+          </div>
+
+          {/* Row 3/4 Mixed: Radar & Pie */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-4 row-span-2">
+            <RadarWidget title="System Health" className="h-full min-h-[300px]" />
+          </div>
+
+          {/* Row 4: Recent Activity & secondary chart */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-4 min-h-[300px]">
+            <RecentActivityWidget title="Recent Logs" />
+          </div>
+
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-4">
+            <ChartWidget title="Traffic Sources" option={pieChartOption} height={280} />
+          </div>
+
+          {/* Row 5: Bottom small chart */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-4">
+            <ChartWidget title="Quarterly Goals" option={barChartOption} height={280} />
+          </div>
+
         </div>
       </div>
     </div>
