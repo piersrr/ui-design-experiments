@@ -2,217 +2,205 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import {
+  Settings2,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  Bell,
+  Sparkles
+} from 'lucide-react';
 
-const MENU_ITEMS = [
-  { id: 'edit', label: 'Edit', icon: '✏️' },
-  { id: 'share', label: 'Share', icon: '↗️' },
-  { id: 'delete', label: 'Delete', icon: '🗑️' },
+// Bloom Colors
+const BLOOM_COLORS = [
+  { name: 'Cyber Blue', value: '#3b82f6', glow: 'rgba(59, 130, 246, 0.6)' },
+  { name: 'Neon Purple', value: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+  { name: 'Matrix Green', value: '#22c55e', glow: 'rgba(34, 197, 94, 0.6)' },
+  { name: 'Solar Orange', value: '#f97316', glow: 'rgba(249, 115, 22, 0.6)' },
+  { name: 'Crimson Red', value: '#ef4444', glow: 'rgba(239, 68, 68, 0.6)' },
 ];
 
-function GooFilterDef() {
-  return (
-    <svg className="absolute size-0" aria-hidden>
-      <defs>
-        <filter id="goo" colorInterpolationFilters="sRGB">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-          <feColorMatrix
-            in="blur"
-            mode="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
-            result="thresh"
-          />
-          <feComposite in="SourceGraphic" in2="thresh" operator="atop" />
-        </filter>
-      </defs>
-    </svg>
-  );
-}
+const MENU_ITEMS = [
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
+  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'logout', label: 'Logout', icon: LogOut },
+];
 
-export default function DropdownPage() {
-  const [open, setOpen] = useState(false);
-  const [gooey, setGooey] = useState(false);
-  const [speed, setSpeed] = useState(1);
-  const [elasticity, setElasticity] = useState(0);
+export default function BloomDropdownPage() {
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Speed = how fast the dropdown appears. Higher speed = shorter duration.
-  const speedClamped = Math.max(0.25, Math.min(2, Number(speed) || 1));
-  const duration = 0.35 / speedClamped;
-  const stagger = duration * 0.15;
+  // Customization State
+  const [bloomIntensity, setBloomIntensity] = useState(0.8);
+  const [activeColor, setActiveColor] = useState(BLOOM_COLORS[0]);
+  const [animationType, setAnimationType] = useState<'spring' | 'smooth'>('spring');
+  const [glassEffect, setGlassEffect] = useState(true);
 
-  const menuTransition = elasticity
-    ? {
-        type: 'spring' as const,
-        stiffness: (200 + elasticity * 400) * speedClamped,
-        damping: (20 + (1 - elasticity) * 15) * Math.sqrt(speedClamped),
-      }
-    : { duration, ease: [0.25, 0.1, 0.25, 1] as const };
+  // Dynamic Styles
+  const bloomStyle = {
+    boxShadow: isOpen
+      ? `0 0 ${20 * bloomIntensity}px ${5 * bloomIntensity}px ${activeColor.glow}, 
+         0 0 ${40 * bloomIntensity}px ${10 * bloomIntensity}px ${activeColor.glow}`
+      : 'none',
+  };
+
+  const buttonBloomStyle = {
+    boxShadow: isOpen || bloomIntensity > 0.5
+      ? `0 0 ${15 * bloomIntensity}px ${2 * bloomIntensity}px ${activeColor.glow}`
+      : 'none',
+  };
 
   return (
-    <div className="flex min-h-full flex-1 bg-white">
-      {/* Settings – left, no card */}
-      <aside className="w-64 shrink-0 p-8">
-        <h1 className="text-xl font-semibold text-black">Dropdown</h1>
-        <h2 className="mt-6 text-sm font-semibold text-black">Settings</h2>
-        <p className="mt-0.5 text-xs text-zinc-500">
-          Adjust to test the dropdown effect.
-        </p>
-        <div className="mt-4 space-y-4">
-          <label className="flex cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              checked={gooey}
-              onChange={(e) => setGooey(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-200 text-zinc-600 focus:ring-zinc-500"
-            />
-            <span className="text-sm font-medium text-black">Gooey</span>
-          </label>
-          <p className="text-xs text-zinc-500">
-            Menu background appears to grow from the circle.
+    <div className={`flex min-h-screen bg-black text-white selection:bg-${activeColor.name.split(' ')[1].toLowerCase()}-500/30`}>
+
+      {/* Settings Panel */}
+      <aside className="w-80 border-r border-zinc-800 bg-zinc-950 p-8 flex flex-col gap-8">
+        <div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
+            Bloom Dropdown
+          </h1>
+          <p className="text-sm text-zinc-500 mt-2">
+            Highly customizable glowing dropdown with smooth animations.
           </p>
-          <div>
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-black">Speed</span>
-              <span className="text-zinc-500">{speed.toFixed(2)}</span>
-            </div>
-            <input
-              type="range"
-              min={0.25}
-              max={2}
-              step={0.05}
-              value={speed}
-              onChange={(e) =>
-                setSpeed(Math.max(0.25, Math.min(2, Number(e.target.value) || 1)))
-              }
-              className="mt-1 h-2 w-full appearance-none rounded-full bg-zinc-200 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-zinc-600"
-            />
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Speed the dropdown appears (higher = faster)
-            </p>
+        </div>
+
+        {/* Intensity Control */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-medium text-zinc-300">Bloom Intensity</label>
+            <span className="text-xs font-mono text-zinc-500">{(bloomIntensity * 100).toFixed(0)}%</span>
           </div>
-          <div>
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-black">Elasticity</span>
-              <span className="text-zinc-500">{elasticity.toFixed(2)}</span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={elasticity}
-              onChange={(e) => setElasticity(Number(e.target.value))}
-              className="mt-1 h-2 w-full appearance-none rounded-full bg-zinc-200 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-zinc-600"
-            />
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Bounce when opening (0 = none, 1 = max)
-            </p>
+          <input
+            type="range"
+            min="0"
+            max="1.5"
+            step="0.1"
+            value={bloomIntensity}
+            onChange={(e) => setBloomIntensity(Number(e.target.value))}
+            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
+          />
+        </div>
+
+        {/* Color Selection */}
+        <div className="space-y-4">
+          <label className="text-sm font-medium text-zinc-300">Bloom Color</label>
+          <div className="grid grid-cols-5 gap-2">
+            {BLOOM_COLORS.map((color) => (
+              <button
+                key={color.name}
+                onClick={() => setActiveColor(color)}
+                className={`w-8 h-8 rounded-full transition-all duration-300 ${activeColor.name === color.name ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-black' : 'hover:scale-105 opacity-70 hover:opacity-100'
+                  }`}
+                style={{ backgroundColor: color.value, boxShadow: `0 0 10px ${color.glow}` }}
+                title={color.name}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Animation & Effect Toggles */}
+        <div className="space-y-4">
+          <label className="text-sm font-medium text-zinc-300">Configuration</label>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => setAnimationType(prev => prev === 'spring' ? 'smooth' : 'spring')}
+              className="flex items-center justify-between px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
+            >
+              <span className="text-sm text-zinc-300">Animation Type</span>
+              <span className="text-xs font-mono px-2 py-1 rounded bg-zinc-950 text-zinc-400 uppercase">
+                {animationType}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setGlassEffect(!glassEffect)}
+              className="flex items-center justify-between px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
+            >
+              <span className="text-sm text-zinc-300">Glassmorphism</span>
+              <div className={`w-10 h-5 rounded-full relative transition-colors ${glassEffect ? 'bg-white' : 'bg-zinc-700'}`}>
+                <div className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-black transition-transform ${glassEffect ? 'translate-x-5' : 'translate-x-0'}`} />
+              </div>
+            </button>
           </div>
         </div>
       </aside>
 
-      {/* Demo – right, no card, white background */}
-      <div className="relative flex min-h-[320px] flex-1 flex-col items-center justify-middle p-8">
-        <GooFilterDef />
-        {/* Wrapper so dropdown + items are positioned relative to button */}
-        <div className="relative flex flex-col items-center justify-middle">
-          {/* Goo filter only on button + dropdown background, so items can have hover */}
-          <div
-            className="relative flex flex-col items-center justify-center"
-            style={gooey ? { filter: 'url(#goo)' } : undefined}
+      {/* Preview Area */}
+      <main className="flex-1 flex items-center justify-center relative overflow-hidden bg-black">
+
+        {/* Ambient Background Glow */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 pointer-events-none blur-[100px] transition-colors duration-700"
+          style={{ backgroundColor: activeColor.value }}
+        />
+
+        <div className="relative">
+          <motion.button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`
+              relative z-20 flex items-center gap-2 px-6 py-3 rounded-full 
+              text-white font-medium transition-all duration-300
+              ${glassEffect ? 'bg-white/10 backdrop-blur-md border border-white/20' : 'bg-zinc-900 border border-zinc-800'}
+            `}
+            style={buttonBloomStyle}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {/* Circle button – white with soft shadow */}
-            <motion.button
-              type="button"
-              aria-expanded={open}
-              aria-haspopup="true"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-2xl text-black transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white mb-2"
-              onClick={() => setOpen((o) => !o)}
-              whileTap={{ scale: 0.95 }}
+            <Sparkles className="w-4 h-4" style={{ color: activeColor.value }} />
+            <span>Actions</span>
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
             >
-            <motion.span
-              animate={{ rotate: open ? 45 : 0 }}
-              transition={
-                elasticity
-                  ? { type: 'spring', stiffness: 300, damping: 25 }
-                  : { duration: duration * 0.8 }
-              }
-            >
-              +
-            </motion.span>
+              <ChevronDown className="w-4 h-4 opacity-70" />
+            </motion.div>
           </motion.button>
 
-          {/* Dropdown background only (no items) – gooey affects this */}
           <AnimatePresence>
-            {open && (
+            {isOpen && (
               <motion.div
-                key="menu-bg"
-                className="absolute left-1/2 top-full z-0 min-w-[180px] -translate-x-1/2 -translate-y-1 overflow-hidden rounded-b-xl rounded-t-2xl bg-zinc-200"
-                style={{ transformOrigin: 'top center' }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0,
-                  transition: elasticity
-                    ? { type: 'spring', stiffness: 400, damping: 30 }
-                    : { duration: duration * 0.7 },
-                }}
-                transition={menuTransition}
-              >
-                <div className="min-h-[10rem] w-full rounded-b-xl rounded-t p-2 " aria-hidden />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          </div>
-
-          {/* Menu items in a separate layer on top – no goo filter, so hover works */}
-          <AnimatePresence>
-            {open && (
-              <motion.div
-                key="menu-items"
-                className="absolute left-1/2 top-full z-10 min-w-[180px] -translate-x-1/2 -translate-y-1 rounded-y p-2"
-                style={{ transformOrigin: 'top center' }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0,
-                  transition: elasticity
-                    ? { type: 'spring', stiffness: 400, damping: 30 }
-                    : { duration: duration * 0.7 },
-                }}
-                transition={menuTransition}
+                initial={{ opacity: 0, scale: 0.9, y: 10, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.95, y: 10, filter: 'blur(10px)' }}
+                transition={
+                  animationType === 'spring'
+                    ? { type: 'spring', stiffness: 400, damping: 25 }
+                    : { duration: 0.2, ease: 'easeOut' }
+                }
+                className={`
+                  absolute top-full mt-4 left-1/2 -translate-x-1/2 w-64 p-2 
+                  rounded-2xl border overflow-hidden z-10
+                  ${glassEffect ? 'bg-black/40 backdrop-blur-xl border-white/10' : 'bg-zinc-900 border-zinc-800'}
+                `}
+                style={bloomStyle}
               >
                 <div className="flex flex-col gap-1">
                   {MENU_ITEMS.map((item, i) => (
                     <motion.button
                       key={item.id}
-                      type="button"
-                      className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm font-medium text-black transition-colors hover:bg-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/50"
-                      initial={{ opacity: 0, filter: 'blur(8px)' }}
-                      animate={{ opacity: 1, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, filter: 'blur(4px)' }}
-                      transition={
-                        elasticity
-                          ? {
-                              type: 'spring',
-                              stiffness: 300,
-                              damping: 25,
-                              delay: duration + stagger * i,
-                            }
-                          : {
-                              duration: duration * 0.9,
-                              delay: duration + stagger * i,
-                              ease: 'easeOut',
-                            }
-                      }
-                      onClick={() => setOpen(false)}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className={`
+                        flex items-center gap-3 px-4 py-3 rounded-xl 
+                        text-sm font-medium text-zinc-300 
+                        hover:text-white transition-all group relative overflow-hidden
+                      `}
+                      whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.05)' }}
                     >
-                      <span className="text-lg" aria-hidden>
-                        {item.icon}
-                      </span>
-                      <span>{item.label}</span>
+                      <item.icon
+                        className="w-4 h-4 transition-colors duration-300"
+                        style={{ color: activeColor.value }} // Icon always colored 
+                      />
+                      <span className="z-10 relative">{item.label}</span>
+
+                      {/* Hover Glow on Item */}
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                        style={{ backgroundColor: activeColor.value }}
+                      />
                     </motion.button>
                   ))}
                 </div>
@@ -220,7 +208,7 @@ export default function DropdownPage() {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
