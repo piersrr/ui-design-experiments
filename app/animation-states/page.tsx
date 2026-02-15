@@ -88,7 +88,7 @@ function StateButton({
       {state.id === 'rendering' && (
         <span className="relative h-4 w-4 shrink-0 rounded-sm border-2 border-current">
           <span
-            className="absolute inset-0 rounded-sm bg-current animate-wipe-right"
+            className="absolute inset-0 bg-current animate-wipe-right"
             aria-hidden
           />
         </span>
@@ -156,11 +156,10 @@ export default function AnimationStatesPage() {
                   key={r}
                   type="button"
                   onClick={() => setRoundness(r)}
-                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    roundness === r
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${roundness === r
                       ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100'
                       : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
-                  }`}
+                    }`}
                 >
                   {roundnessLabels[r]}
                 </button>

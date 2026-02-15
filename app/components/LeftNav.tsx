@@ -16,6 +16,7 @@ const navItems = [
   { href: '/carousel/', label: 'Carousel' },
   { href: '/animation-states/', label: 'Animation states' },
   { href: '/accordion/', label: 'Accordion' },
+  { href: '/toast/', label: 'Toast' },
 ];
 
 function ThemeToggle({ theme, toggleTheme }: { theme: 'light' | 'dark'; toggleTheme: () => void }) {
